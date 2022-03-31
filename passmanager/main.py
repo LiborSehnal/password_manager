@@ -40,7 +40,7 @@ def uloz():
         }
     }
 
-    # checkbox při kompletním nevyplnění
+    # showinfo při částečném/kompletním nevyplnění
     if len(website) == 0 or len(email) == 0 or len(password) == 0:
         messagebox.showinfo(title="chyba", message="Nevyplnil jsi všechny položky.")
     # načtení, update a zápis dat do .json s try/except pro vytvoření json při prvním způštění
@@ -61,6 +61,22 @@ def uloz():
             password_entry.delete(0, END)
 
 
+# NAJÍT HESLO #
+
+def find_pass():
+    website = website_entry.get()
+    try:
+        with open("data.json") as data_file:
+            data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Chyba", message="Záznam nenalezen.")
+    else:
+        if website in data:
+            email = data[website]["email"]
+            password = data[website]["password"]
+            messagebox.showinfo(title=website, message=f"Email: {email}\nPassword: {password}")
+        else:
+            messagebox.showinfo(title="Chyba", message=f"Záznam pro web {website} nenalezen.")
 
 # UI NASTAVENÍ#
 
@@ -68,9 +84,9 @@ window = Tk()
 window.title("Pass Manager")
 window.config(padx=50, pady=50)
 
-canvas = Canvas(height=350, width=350)
+canvas = Canvas(height=320, width=320)
 logo_img = PhotoImage(file="logo.png")
-canvas.create_image(200, 200, image=logo_img)
+canvas.create_image(190, 190, image=logo_img)
 canvas.grid(row=0, column=1)
 
 
@@ -84,21 +100,22 @@ password_label.grid(row=3, column=0)
 
 
 # Vstupy
-website_entry = Entry(width=35)
-website_entry.grid(row=1, column=1, columnspan=2)
+website_entry = Entry(width=30)
+website_entry.grid(row=1, column=1)
 website_entry.focus()
-email_entry = Entry(width=35)
-email_entry.grid(row=2, column=1, columnspan=2)
+email_entry = Entry(width=30)
+email_entry.grid(row=2, column=1)
 email_entry.insert(0, "libor.sehnal@gmail.com")
-password_entry = Entry(width=25)
+password_entry = Entry(width=30)
 password_entry.grid(row=3, column=1)
 
 
 # Tlačítka
 generate_pass_button = Button(text="Generovat", command=generate_password)
 generate_pass_button.grid(row=3, column=2)
-add_button = Button(text="Uložit", width=36, command=uloz)
+add_button = Button(text="Uložit", width=43, command=uloz)
 add_button.grid(row=4, column=1, columnspan=2)
-
+generate_search_button = Button(text="Hledej", width=7, command=find_pass)
+generate_search_button.grid(row=1, column=2)
 
 window.mainloop()
